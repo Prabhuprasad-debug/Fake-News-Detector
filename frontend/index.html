@@ -1,0 +1,40 @@
+   <!DOCTYPE html>
+   <html>
+   <head>
+       <title>Fake News Detector</title>
+       <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+   </head>
+   <body class="bg-gray-100">
+       <div class="container mx-auto p-5">
+           <h1 class="text-3xl font-bold mb-5">🔍 Fake News Detector</h1>
+           <textarea id="newsText" class="w-full p-3 border rounded-lg" placeholder="Paste news article here..."></textarea>
+           <button onclick="checkNews()" class="bg-blue-500 text-white p-2 rounded mt-3">
+               Check for Fake News
+           </button>
+           <div id="result" class="mt-5 p-4 hidden"></div>
+       </div>
+
+       <script>
+           async function checkNews() {
+               const text = document.getElementById('newsText').value;
+               const resultDiv = document.getElementById('result');
+               
+               const response = await fetch('http://localhost:5000/predict', {
+                   method: 'POST',
+                   headers: { 'Content-Type': 'application/json' },
+                   body: JSON.stringify({ text })
+               });
+               
+               const data = await response.json();
+               
+               resultDiv.className = data.prediction === "FAKE" 
+                   ? "mt-5 p-4 bg-red-100 text-red-700 rounded border border-red-300" 
+                   : "mt-5 p-4 bg-green-100 text-green-700 rounded border border-green-300";
+                   
+               resultDiv.innerHTML = `<strong>Prediction:</strong> ${data.prediction}`;
+               resultDiv.classList.remove('hidden');
+           }
+       </script>
+   </body>
+   </html>
+   
